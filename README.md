@@ -71,6 +71,14 @@ freelancer_manager/
 
 ![Diagrama de Classes](Diagrama_de_Classes.png)
 
+## Diagrama de Casos de Uso
+
+![Diagrama de Casos de Uso](Diagrama_Casos_de_Uso.png)
+
+
+
+
+
 ---
 
 ## 🚀 Execução
