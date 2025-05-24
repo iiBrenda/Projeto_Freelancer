@@ -1,6 +1,7 @@
-from package.sistema import Sistema
-from gui.app import iniciar_interface
+from gui.app import App
+import tkinter as tk
 
-if __name__ == '__main__':
-    sistema = Sistema()
-    iniciar_interface(sistema)
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = App(root)
+    root.mainloop()
