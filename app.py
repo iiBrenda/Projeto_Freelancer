@@ -1,114 +1,233 @@
 import tkinter as tk
-from tkinter import ttk
-from ttkbootstrap import Style
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 
-def iniciar_interface(sistema):
-    app = tk.Tk()
-    app.title("Gerenciador de Freelancers")
-    app.geometry("700x500")
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Sistema Freelancer")
+        self.root.geometry("800x600")
 
-    style = Style("cosmo")
-    aba = ttk.Notebook(app)
+        self.clientes = []
+        self.freelancers = []
+        self.servicos = []
 
-    frame_freelancer = ttk.Frame(aba)
-    frame_cliente = ttk.Frame(aba)
-    frame_servico = ttk.Frame(aba)
-    frame_listagem = ttk.Frame(aba)
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(expand=True, fill='both')
 
-    aba.add(frame_freelancer, text='Cadastrar Freelancer')
-    aba.add(frame_cliente, text='Cadastrar Cliente')
-    aba.add(frame_servico, text='Criar Serviço')
-    aba.add(frame_listagem, text='Relatórios')
-    aba.pack(expand=True, fill='both')
+        self.create_freelancer_tab()
+        self.create_cliente_tab()
+        self.create_servico_tab()
+        self.create_relatorios_tab()
 
-    def atualizar_opcoes():
-        cb_cliente['values'] = [c.nome for c in sistema.clientes]
-        cb_freelancer['values'] = [f.nome for f in sistema.freelancers]
+    def create_freelancer_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Freelancers")
 
-    # Freelancer
-    ttk.Label(frame_freelancer, text="Nome:").pack()
-    nome_f = ttk.Entry(frame_freelancer)
-    nome_f.pack()
+        # Nome
+        ttk.Label(tab, text="Nome:").pack()
+        self.nome_freelancer = ttk.Entry(tab)
+        self.nome_freelancer.pack()
 
-    ttk.Label(frame_freelancer, text="CPF/CNPJ:").pack()
-    doc_f = ttk.Entry(frame_freelancer)
-    doc_f.pack()
+       
+        # Contato (novo)
+        ttk.Label(tab, text="Contato:").pack()
+        self.contato_freelancer = ttk.Entry(tab)
+        self.contato_freelancer.pack()
 
-    ttk.Label(frame_freelancer, text="Contato:").pack()
-    contato_f = ttk.Entry(frame_freelancer)
-    contato_f.pack()
+        # Área de atuação
+        ttk.Label(tab, text="Área de Atuação:").pack()
+        self.habilidade_freelancer = ttk.Entry(tab)
+        self.habilidade_freelancer.pack()
 
-    ttk.Label(frame_freelancer, text="Área de Atuação:").pack()
-    area_f = ttk.Entry(frame_freelancer)
-    area_f.pack()
+        ttk.Button(tab, text="Cadastrar Freelancer", command=self.cadastrar_freelancer).pack(pady=5)
 
-    def salvar_freelancer():
-        sistema.cadastrar_freelancer(nome_f.get(), doc_f.get(), contato_f.get(), area_f.get())
-        atualizar_opcoes()
-        messagebox.showinfo("Sucesso", "Freelancer cadastrado!")
+        self.lista_freelancers = tk.Listbox(tab)
+        self.lista_freelancers.pack(expand=True, fill='both')
 
-    ttk.Button(frame_freelancer, text="Salvar", command=salvar_freelancer).pack(pady=10)
+        ttk.Button(tab, text="Remover Freelancer", command=self.remover_freelancer).pack(pady=5)
 
-    # Cliente
-    ttk.Label(frame_cliente, text="Nome:").pack()
-    nome_c = ttk.Entry(frame_cliente)
-    nome_c.pack()
+    def create_cliente_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Clientes")
 
-    ttk.Label(frame_cliente, text="CPF/CNPJ:").pack()
-    doc_c = ttk.Entry(frame_cliente)
-    doc_c.pack()
+        # Nome
+        ttk.Label(tab, text="Nome:").pack()
+        self.nome_cliente = ttk.Entry(tab)
+        self.nome_cliente.pack()
 
-    ttk.Label(frame_cliente, text="Contato:").pack()
-    contato_c = ttk.Entry(frame_cliente)
-    contato_c.pack()
+       
+        # Contato (novo)
+        ttk.Label(tab, text="Contato:").pack()
+        self.contato_cliente = ttk.Entry(tab)
+        self.contato_cliente.pack()
 
-    def salvar_cliente():
-        sistema.cadastrar_cliente(nome_c.get(), doc_c.get(), contato_c.get())
-        atualizar_opcoes()
-        messagebox.showinfo("Sucesso", "Cliente cadastrado!")
+        # Email 
+        ttk.Label(tab, text="Email:").pack()
+        self.email_cliente = ttk.Entry(tab)
+        self.email_cliente.pack()
 
-    ttk.Button(frame_cliente, text="Salvar", command=salvar_cliente).pack(pady=10)
+        ttk.Button(tab, text="Cadastrar Cliente", command=self.cadastrar_cliente).pack(pady=5)
 
-    # Serviço
-    ttk.Label(frame_servico, text="Descrição:").pack()
-    desc = ttk.Entry(frame_servico)
-    desc.pack()
+        self.lista_clientes = tk.Listbox(tab)
+        self.lista_clientes.pack(expand=True, fill='both')
 
-    ttk.Label(frame_servico, text="Valor (R$):").pack()
-    valor = ttk.Entry(frame_servico)
-    valor.pack()
+        ttk.Button(tab, text="Remover Cliente", command=self.remover_cliente).pack(pady=5)
 
-    ttk.Label(frame_servico, text="Data de Entrega (YYYY-MM-DD):").pack()
-    data = ttk.Entry(frame_servico)
-    data.pack()
+    def create_servico_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Serviços")
 
-    ttk.Label(frame_servico, text="Cliente:").pack()
-    cb_cliente = ttk.Combobox(frame_servico, values=[])
-    cb_cliente.pack()
+        # Descrição
+        ttk.Label(tab, text="Descrição:").pack()
+        self.descricao_servico = ttk.Entry(tab)
+        self.descricao_servico.pack()
 
-    ttk.Label(frame_servico, text="Freelancer:").pack()
-    cb_freelancer = ttk.Combobox(frame_servico, values=[])
-    cb_freelancer.pack()
+        # Valor
+        ttk.Label(tab, text="Valor (R$):").pack()
+        self.valor_servico = ttk.Entry(tab)
+        self.valor_servico.pack()
 
-    def salvar_servico():
-        cli = next((c for c in sistema.clientes if c.nome == cb_cliente.get()), None)
-        free = next((f for f in sistema.freelancers if f.nome == cb_freelancer.get()), None)
-        if cli and free:
-            sistema.criar_servico(desc.get(), float(valor.get()), data.get(), cli, free)
-            messagebox.showinfo("Sucesso", "Serviço criado!")
+        # Data de entrega (novo)
+        ttk.Label(tab, text="Data de Entrega (YYYY-MM-DD):").pack()
+        self.data_servico = ttk.Entry(tab)
+        self.data_servico.pack()
 
-    ttk.Button(frame_servico, text="Criar Serviço", command=salvar_servico).pack(pady=10)
+        # Combobox para Cliente (novo)
+        ttk.Label(tab, text="Cliente:").pack()
+        self.cb_cliente = ttk.Combobox(tab, values=[c[0] for c in self.clientes])
+        self.cb_cliente.pack()
 
-    # Relatórios
-    ttk.Button(frame_listagem, text="Listar Serviços", command=lambda:
-               messagebox.showinfo("Serviços", "\n\n".join(sistema.listar_servicos()))).pack(pady=10)
+        # Combobox para Freelancer (novo)
+        ttk.Label(tab, text="Freelancer:").pack()
+        self.cb_freelancer = ttk.Combobox(tab, values=[f[0] for f in self.freelancers])
+        self.cb_freelancer.pack()
 
-    ttk.Button(frame_listagem, text="Listar Freelancers", command=lambda:
-               messagebox.showinfo("Freelancers", "\n".join(sistema.listar_freelancers()))).pack(pady=10)
+        ttk.Button(tab, text="Registrar Serviço", command=self.cadastrar_servico).pack(pady=5)
 
-    ttk.Button(frame_listagem, text="Listar Clientes", command=lambda:
-               messagebox.showinfo("Clientes", "\n".join(sistema.listar_clientes()))).pack(pady=10)
+        self.lista_servicos = tk.Listbox(tab)
+        self.lista_servicos.pack(expand=True, fill='both')
 
-    atualizar_opcoes()
-    app.mainloop()
+        ttk.Button(tab, text="Concluir Serviço", command=self.concluir_servico).pack(pady=2)
+        ttk.Button(tab, text="Editar Serviço", command=self.editar_servico).pack(pady=2)
+        ttk.Button(tab, text="Remover Serviço", command=self.remover_servico).pack(pady=2)
+
+    def create_relatorios_tab(self):
+        tab = ttk.Frame(self.notebook)
+        self.notebook.add(tab, text="Relatórios")
+
+        # Botões de relatório 
+        ttk.Button(tab, text="Listar Serviços", 
+                  command=lambda: messagebox.showinfo("Serviços", self.listar_servicos())).pack(pady=10)
+        
+        ttk.Button(tab, text="Listar Freelancers", 
+                  command=lambda: messagebox.showinfo("Freelancers", self.listar_freelancers())).pack(pady=10)
+        
+        ttk.Button(tab, text="Listar Clientes", 
+                  command=lambda: messagebox.showinfo("Clientes", self.listar_clientes())).pack(pady=10)
+
+    def cadastrar_freelancer(self):
+        nome = self.nome_freelancer.get()
+        documento = self.doc_freelancer.get()
+        contato = self.contato_freelancer.get()
+        area = self.habilidade_freelancer.get()
+        
+        if nome and documento and contato and area:
+            self.freelancers.append((nome, documento, contato, area))
+            self.lista_freelancers.insert(tk.END, nome)
+            self.cb_freelancer['values'] = [f[0] for f in self.freelancers]
+            messagebox.showinfo("Cadastro", f"Freelancer {nome} cadastrado com sucesso!")
+        else:
+            messagebox.showerror("Erro", "Preencha todos os campos.")
+
+    def cadastrar_cliente(self):
+        nome = self.nome_cliente.get()
+        documento = self.doc_cliente.get()
+        contato = self.contato_cliente.get()
+        email = self.email_cliente.get()
+        
+        if nome and documento and contato and email:
+            self.clientes.append((nome, documento, contato, email))
+            self.lista_clientes.insert(tk.END, nome)
+            self.cb_cliente['values'] = [c[0] for c in self.clientes]
+            messagebox.showinfo("Cadastro", f"Cliente {nome} cadastrado com sucesso!")
+        else:
+            messagebox.showerror("Erro", "Preencha todos os campos.")
+
+    def cadastrar_servico(self):
+        descricao = self.descricao_servico.get()
+        valor = self.valor_servico.get()
+        data = self.data_servico.get()
+        cliente_nome = self.cb_cliente.get()
+        freelancer_nome = self.cb_freelancer.get()
+        
+        if descricao and valor and data and cliente_nome and freelancer_nome:
+            # Encontra cliente e freelancer
+            cliente = next((c for c in self.clientes if c[0] == cliente_nome), None)
+            freelancer = next((f for f in self.freelancers if f[0] == freelancer_nome), None)
+            
+            if cliente and freelancer:
+                self.servicos.append([descricao, valor, data, cliente, freelancer, False])  # False = não concluído
+                self.lista_servicos.insert(tk.END, f"{descricao} - {cliente[0]} - {freelancer[0]}")
+                messagebox.showinfo("Cadastro", f"Serviço '{descricao}' registrado com sucesso!")
+            else:
+                messagebox.showerror("Erro", "Cliente ou Freelancer não encontrado!")
+        else:
+            messagebox.showerror("Erro", "Preencha todos os campos.")
+
+    def remover_freelancer(self):
+        selecionado = self.lista_freelancers.curselection()
+        if selecionado:
+            self.lista_freelancers.delete(selecionado)
+            del self.freelancers[selecionado[0]]
+            self.cb_freelancer['values'] = [f[0] for f in self.freelancers]
+
+    def remover_cliente(self):
+        selecionado = self.lista_clientes.curselection()
+        if selecionado:
+            self.lista_clientes.delete(selecionado)
+            del self.clientes[selecionado[0]]
+            self.cb_cliente['values'] = [c[0] for c in self.clientes]
+
+    def concluir_servico(self):
+        selecionado = self.lista_servicos.curselection()
+        if selecionado:
+            idx = selecionado[0]
+            self.servicos[idx][5] = True  # Marca como concluído
+            item = self.lista_servicos.get(idx)
+            self.lista_servicos.delete(idx)
+            self.lista_servicos.insert(idx, item + " (Concluído)")
+
+    def editar_servico(self):
+        selecionado = self.lista_servicos.curselection()
+        if selecionado:
+            idx = selecionado[0]
+            nova_desc = self.descricao_servico.get()
+            novo_valor = self.valor_servico.get()
+            nova_data = self.data_servico.get()
+            if nova_desc and novo_valor and nova_data:
+                self.servicos[idx][0] = nova_desc
+                self.servicos[idx][1] = novo_valor
+                self.servicos[idx][2] = nova_data
+                self.lista_servicos.delete(idx)
+                status = " (Concluído)" if self.servicos[idx][5] else ""
+                self.lista_servicos.insert(idx, f"{nova_desc} - {self.servicos[idx][3][0]} - {self.servicos[idx][4][0]}{status}")
+
+    def remover_servico(self):
+        selecionado = self.lista_servicos.curselection()
+        if selecionado:
+            self.lista_servicos.delete(selecionado)
+            del self.servicos[selecionado[0]]
+
+    def listar_servicos(self):
+        return [f"{s[0]} - Cliente: {s[3][0]} - Freelancer: {s[4][0]} - Valor: R${s[1]} - Data: {s[2]}" for s in self.servicos]
+
+    def listar_freelancers(self):
+        return [f"{f[0]} - {f[3]} - Contato: {f[2]}" for f in self.freelancers]
+
+    def listar_clientes(self):
+        return [f"{c[0]} - Email: {c[3]} - Contato: {c[2]}" for c in self.clientes]
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = App(root)
+    root.mainloop()
