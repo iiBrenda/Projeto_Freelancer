@@ -1,4 +1,4 @@
-# Freelancer Manager
+# Freelancer 
 
 **Sistema de Gerenciamento de Freelancers e Serviços**  
 Disciplina: Orientação a Objetos (UnB Gama – 01/2025)  
@@ -69,7 +69,7 @@ freelancer_manager/
 
 ## 📷 Diagrama de Classes
 
-![Diagrama de Classes](diagrama_classes.png)
+![Diagrama de Classes](Diagrama_de_Classes.png)
 
 ---
 
